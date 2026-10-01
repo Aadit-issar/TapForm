@@ -1,0 +1,32 @@
+# Play Console Data Safety preparation
+
+This is an implementation-derived working map, not a completed Play Console declaration. Validate it against the production Supabase project, final merged Android manifest, SDK disclosure report, backup settings, and final audience before submission. Hosted production behavior has not been verified.
+
+| Data type | Source and purpose | Collection or sharing | Retention notes |
+|---|---|---|---|
+| Email address and account identifier | Supabase Auth sign-up and sign-in | Required to authenticate. Supabase is the service provider; the email is not shown to other TapForm users by default. | Until account deletion, subject to Supabase backup and auth retention. |
+| Display name and workspace role | Account/profile setup; identifies the account and Personal or Organization workspace | Sent to Supabase. A display name may be shown to a peer during a Tap Card exchange. | Until edited or the associated account is deleted. Peer receipts can retain the name snapshot. |
+| Vault details | User-entered identity, contact, education, address, and emergency-contact fields | Stored in Supabase for reuse. Shared only when the user approves an organization request or accepts a peer exchange that includes those fields. | Vault values remain until changed, removed, or account deletion. Approved organization snapshots use the request's configured retention period (7, 30, or 90 days); the cleanup job must be confirmed active on the deployed project. Peer snapshots remain with exchange history until related data is deleted. |
+| Tap Card metadata and selected field keys | User-created card name, type, expiry, order, and selected Vault field references | Stored in Supabase. A recipient sees the card name and values after the receiver approves the exchange. | Card metadata remains until changed, archived/deleted, or account deletion. A completed receipt is a separate snapshot. |
+| Organization and request data | Organization profile, templates, requested fields, one-time question definitions, link settings, and request status | Stored in Supabase. Request details are shown to participants; approved submission values are available to authorized members of that organization. | Active requests refer to a saved template version. Template edits do not rewrite that version. Request contents and approved snapshots follow the configured retention behavior; deployment and scheduled cleanup require verification. |
+| Submission values and one-time answers | User-approved request completion | Supabase stores the approved field snapshot and answers separately. The requesting organization and its authorized members can access the submission. Answers are not written to the Vault. | Field and answer content is scheduled for removal after the stated retention period. Status/count metadata can remain for receipts. Confirm the job and backup behavior on the deployed service. |
+| Peer exchange values and receipt metadata | Selected Tap Card fields after receiver approval | Stored as an exchange snapshot in Supabase for both participants' history. Declining does not transfer Vault values. | Completed snapshots remain with exchange history until the related records are removed by account deletion or applicable service policy. |
+| Request/exchange routing and activity metadata | Generated when a user creates or opens a request/exchange | Includes opaque tokens or their hashes, identifiers, status, timestamps, expiry, and retry/idempotency metadata. It supports routing, replay prevention, and history. | Expiring contexts are rejected and cleaned up by service logic. Non-sensitive receipt metadata can remain while the related records exist. |
+| Camera input | Device camera while the user scans a QR code | Used to decode request or Tap Card routing context. Camera images are not intentionally uploaded or retained by TapForm; the opaque token is sent to Supabase for resolution. | Camera access is only used in the scanning flow. Verify final SDK behavior against Play's data disclosure requirements. |
+| Contacts | User selects “Save to Contacts” for a received card | Selected card fields are written to the device Contacts provider. Expo Contacts requires Android read and write Contacts permissions for this operation; TapForm does not upload the address book. | Stored and managed by the device Contacts app. Removing an in-app card does not delete an exported contact. |
+| Clipboard and system-share content | User invokes Copy or Share | A selected value or chosen export is passed to the OS clipboard or the destination selected in the system share sheet. | Managed by the OS and destination app. TapForm cannot control the selected recipient's retention. |
+| Authentication session token | Supabase Auth | Used to authenticate API calls and keep the user signed in. Stored via Expo SecureStore on supported native platforms; never included in NFC, QR, request links, or notification extras. | Cleared on sign-out or deletion. Confirm Supabase token expiry and deletion behavior for the production project. |
+
+## Categories not intentionally collected by current app code
+
+- TapForm does not intentionally collect precise or approximate location, financial or payment information, browsing history, advertising identifiers, biometric data, or microphone/audio recordings.
+- No analytics or advertising SDK is intentionally configured in the direct application dependencies. Recheck the final SDK inventory before submission.
+- Camera frames are used for scanning; the app does not intentionally upload images.
+
+## Security and declaration checks
+
+- The app may contain the public Supabase URL and anon/publishable key. It must never contain a service-role key, private signing key, signing password, or refresh token in routing payloads.
+- RLS and server authorization are the access boundary. Local PostgreSQL suites pass, but hosted RLS, Auth, PostgREST, Realtime, scheduled cleanup, and production deletion are not yet runtime verified.
+- NFC, QR, links, and notification extras carry routing context only; they must not contain Vault values or One-Time answers.
+- Confirm TLS, hosting region, subprocessors, database/back-up retention, scheduled-job health, deletion timing, and any public deletion URL with the publisher before completing Play Console answers.
+- Reconcile this map with Play Console's SDK report and the exact publisher-signed release artifact. Update it when schema, service providers, permissions, or SDKs change.

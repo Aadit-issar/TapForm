@@ -1,0 +1,15 @@
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+
+group = 'com.tapform.nfcpeer'
+version = '1.0.0'
+
+android {
+  namespace "com.tapform.nfcpeer"
+  defaultConfig {
+    minSdkVersion 24
+    versionCode 1
+    versionName "1.0.0"
+  }
+}
+dependencies { testImplementation 'junit:junit:4.13.2' }

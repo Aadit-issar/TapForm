@@ -1,0 +1,6 @@
+{
+  "name": "tapform-nfc-peer",
+  "version": "1.0.0",
+  "private": true,
+  "expo": { "name": "NfcPeer", "android": { "modules": ["expo.modules.nfcpeer.NfcPeerModule"] } }
+}

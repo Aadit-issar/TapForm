@@ -1,0 +1,31 @@
+{
+  "build": {
+    "development": {
+      "environment": "development",
+      "env": { "EXPO_PUBLIC_DEMO_MODE": "false" },
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "withoutCredentials": true
+      }
+    },
+    "preview": {
+      "environment": "preview",
+      "env": { "EXPO_PUBLIC_DEMO_MODE": "false" },
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "environment": "production",
+      "env": { "EXPO_PUBLIC_DEMO_MODE": "false" },
+      "credentialsSource": "remote",
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
+  }
+}
